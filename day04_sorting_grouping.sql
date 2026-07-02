@@ -35,7 +35,7 @@ SELECT f.rating, count(*) AS film_count_for_each_rating
 FROM film f
 GROUP BY f.rating;
 
---- 5. What is the average rental_rate for each rating, rounded to 2 decimals? Sort highest average first.
+--- 5. What is the average rental_rate for each rating, rounded to 2 decimals? (Sort highest average first).
 
 SELECT f.rating, ROUND(AVG(f.rental_rate), 2) AS average_rental_for_each_rating
 FROM film f 
