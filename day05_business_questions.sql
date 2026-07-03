@@ -97,3 +97,13 @@ SELECT f.title AS movie_name, f.length AS runtime
 FROM film f 
 ORDER BY f.length DESC
 LIMIT 5;
+
+
+---3. "Break down how many films we have in each rating category, and only show the categories with more than 200 titles. Sort biggest first."
+---(covers: GROUP BY + COUNT + HAVING + ORDER BY — the full combo)
+
+SELECT f.rating AS rating_category, count(*) AS rating_count
+FROM film f
+GROUP BY f.rating 
+HAVING count(*) > 200
+ORDER BY rating_count DESC; 
