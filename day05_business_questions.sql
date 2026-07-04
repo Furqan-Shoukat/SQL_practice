@@ -106,4 +106,22 @@ SELECT f.rating AS rating_category, count(*) AS rating_count
 FROM film f
 GROUP BY f.rating 
 HAVING count(*) > 200
-ORDER BY rating_count DESC; 
+ORDER BY rating_count DESC;
+
+
+--- 4. "What's our total revenue across all payments?"
+--- (covers: SUM on the payment table)
+
+SELECT SUM(p.amount)  
+FROM payment p;
+ 
+--- 5. "Who are our top 10 customers by total money spent? I need their first and last names and the total, highest spenders first."
+--- (covers: JOIN + GROUP BY + SUM + ORDER BY + LIMIT — the assessment-style multi-skill query)
+
+
+SELECT c.first_name, c.last_name, SUM(p.amount) AS total_revenue
+FROM customer c 
+INNER JOIN payment p ON p.customer_id = c.customer_id  
+GROUP BY c.customer_id, c.first_name, c.last_name 
+ORDER BY total_revenue DESC
+LIMIT 10;
