@@ -1,9 +1,9 @@
 -- Progressive practice: combining joins, aggregates, HAVING, CASE, subqueries
--- Level 2, 3 complete, Level 4 in progress
+-- Level 2, 3, 4 complete
 -- Skills: aggregate across join chain, compare-group-to-overall (HAVING + scalar subquery),
 --         CASE label on aggregate
 -- Database: DVDrental (PostgreSQL)
--- Date: 2026-07-14 
+-- Date: 2026-07-15 
 
 --- Level 1 — Reactivation
 
@@ -107,3 +107,31 @@ INNER JOIN category c ON c.category_id = fc.category_id
 INNER JOIN film_actor fa ON fa.film_id = f.film_id
 INNER JOIN actor a ON a.actor_id = fa.actor_id
 WHERE c.name = 'Horror');
+
+
+--- Level 4 — Full integration
+
+--- 1. Build a report of each city where at least one customer lives, showing the city, its customer count, its total revenue, 
+--- and a flag marking it "Underperforming" when its total revenue is below the average revenue across all cities.
+
+SELECT  ct.city, 
+		COUNT(DISTINCT c.customer_id) AS customer_count, 
+		SUM(p.amount) AS total_revenue, 
+		CASE WHEN sum(p.amount) < (
+		 							SELECT AVG(total_revenue)
+									FROM (
+											SELECT sum(p2.amount) AS total_revenue 
+											FROM customer c2
+											INNER JOIN address a2 ON a2.address_id = c2.address_id
+											INNER JOIN city ct2 ON ct2.city_id = a2.city_id
+											INNER JOIN payment p2 ON p2.customer_id = c2.customer_id
+											GROUP BY ct2.city_id, ct2.city
+											
+										  ) AS total_average_revenue 
+								   ) THEN 'Underperforming' ELSE 'ON Target' END AS performance_flag
+FROM customer c 
+INNER JOIN address a ON a.address_id = c.address_id
+INNER JOIN city ct ON ct.city_id = a.city_id
+INNER JOIN payment p ON p.customer_id = c.customer_id
+GROUP BY ct.city_id, ct.city
+ORDER BY total_revenue DESC;
